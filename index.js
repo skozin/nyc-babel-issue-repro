@@ -12,12 +12,6 @@ export const FAILED = {}
 export let chan = {
   _state: STATE_WAITING_FOR_PUBLISHER,
   _buffer: [],
-  _needsDrain: true,
-
-  get _bufferSize() {
-    return Math.floor(5 * Math.random())
-  },
-
   take, _take, _takeFromWaitingPublisher, _triggerWaiters, _emitDrain
 }
 
@@ -49,9 +43,8 @@ function _take(fnVal, fnErr, needsCancelFn) {
       let fn = item.type == TYPE_VALUE ? fnVal : fnErr
       item.fnVal && item.fnVal()
       fn && fn(item.value)
-      if (chan._state != STATE_CLOSED && chan._buffer.length < chan._bufferSize) {
+      if (chan._state != STATE_CLOSED) {
         chan._triggerWaiters(true)
-        chan._needsDrain && chan._emitDrain()
       }
       return nop
     }
@@ -66,7 +59,7 @@ function _take(fnVal, fnErr, needsCancelFn) {
   if (prevState == STATE_NORMAL) {
     // notify all waiters for the opportunity to publish
     chan._triggerWaiters(true)
-    chan._needsDrain && chan._emitDrain() // TODO: probably not needed here
+    chan._emitDrain() // TODO: probably not needed here
   }
 
   return needsCancelFn ? () => { item.fnVal = item.fnErr = undefined } : nop
