@@ -25,5 +25,6 @@ Also, the highlighting sometimes starts and ends at positions that
 make no sense, e.g. between "t" and "h" letters in `this` keyword.
 
 [nyc]: /bcoe/nyc
+[ava]: /sindresorhus/ava
 [cochan]: /skozin/cochan
 [babel]: http://babeljs.io
