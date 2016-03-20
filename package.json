@@ -16,10 +16,6 @@
     "presets": [
       "es2015"
     ],
-    "plugins": [
-      "syntax-async-functions",
-      "transform-async-to-generator"
-    ],
     "sourceMaps": "inline"
   },
   "ava": {
@@ -41,8 +37,6 @@
   "devDependencies": {
     "ava": "sindresorhus/ava",
     "babel-cli": "^6.5.1",
-    "babel-plugin-syntax-async-functions": "^6.5.0",
-    "babel-plugin-transform-async-to-generator": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",
     "babel-register": "^6.5.2",
     "nyc": "^6.1.1"
