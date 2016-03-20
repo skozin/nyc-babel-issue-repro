@@ -9,101 +9,97 @@ export const TYPE_ERROR = 1
 export const CLOSED = {}
 export const FAILED = {}
 
-export class Chan {
-
-  constructor() {
-    this._state = STATE_WAITING_FOR_PUBLISHER
-    this._buffer = []
-  }
-
-  get _needsDrain() {
-    return Math.random() > 0.5
-  }
+export let chan = {
+  _state: STATE_WAITING_FOR_PUBLISHER,
+  _buffer: [],
+  _needsDrain: true,
 
   get _bufferSize() {
-    return Math.floor(10 * Math.random())
+    return Math.floor(5 * Math.random())
+  },
+
+  take, _take, _takeFromWaitingPublisher, _triggerWaiters, _emitDrain
+}
+
+function take(passResolve, passReject, needsCancelFn) {
+  return new Promise(resolve => {
+    chan._take(
+      passResolve ? resolve : undefined,
+      passReject ? resolve : undefined,
+      needsCancelFn)
+  })
+}
+
+function _take(fnVal, fnErr, needsCancelFn) {
+  if (chan._state == STATE_CLOSED) {
+    fnVal && fnVal(CLOSED)
+    return nop
   }
 
-  take(passResolve, passReject, needsCancelFn) {
-    return new Promise(resolve => {
-      this._take(
-        passResolve ? resolve : undefined,
-        passReject ? resolve : undefined,
-        needsCancelFn)
-    })
-  }
-
-  _take(fnVal, fnErr, needsCancelFn) {
-    if (this._state == STATE_CLOSED) {
-      fnVal && fnVal(CLOSED)
-      return nop
-    }
- 
-    let prevState = this._state
-    if (prevState != STATE_WAITING_FOR_PUBLISHER) {
-      let item = this._takeFromWaitingPublisher()
-      if (item === FAILED) {
-        if (this._state == STATE_CLOSED) {
-          fnVal && fnVal(CLOSED)
-          return nop
-        }
-      } else {
-        assert(item.type == TYPE_VALUE || item.type == TYPE_ERROR)
-        let fn = item.type == TYPE_VALUE ? fnVal : fnErr
-        item.fnVal && item.fnVal()
-        fn && fn(item.value)
-        if (this._state != STATE_CLOSED && this._buffer.length < this._bufferSize) {
-          this._triggerWaiters(true)
-          this._needsDrain && this._emitDrain()
-        }
+  let prevState = chan._state
+  if (prevState != STATE_WAITING_FOR_PUBLISHER) {
+    let item = chan._takeFromWaitingPublisher()
+    if (item === FAILED) {
+      if (chan._state == STATE_CLOSED) {
+        fnVal && fnVal(CLOSED)
         return nop
       }
+    } else {
+      assert(item.type == TYPE_VALUE || item.type == TYPE_ERROR)
+      let fn = item.type == TYPE_VALUE ? fnVal : fnErr
+      item.fnVal && item.fnVal()
+      fn && fn(item.value)
+      if (chan._state != STATE_CLOSED && chan._buffer.length < chan._bufferSize) {
+        chan._triggerWaiters(true)
+        chan._needsDrain && chan._emitDrain()
+      }
+      return nop
     }
- 
-    assert(this._state == STATE_WAITING_FOR_PUBLISHER)
- 
-    let item = { fnVal, fnErr }
-    let buf = []
-    buf.push(item)
- 
-    if (prevState == STATE_NORMAL) {
-      // notify all waiters for the opportunity to publish
-      this._triggerWaiters(true)
-      this._needsDrain && this._emitDrain() // TODO: probably not needed here
-    }
- 
-    return needsCancelFn ? () => { item.fnVal = item.fnErr = undefined } : nop
   }
 
-  _takeFromWaitingPublisher() {
-    assert(this._state == STATE_NORMAL || this._state == STATE_CLOSING)
+  assert(chan._state == STATE_WAITING_FOR_PUBLISHER)
 
-    let len = this._buffer.length
-    if (len == 0) {
-      this._state = STATE_WAITING_FOR_PUBLISHER
-      return FAILED
-    }
+  let item = { fnVal, fnErr }
+  let buf = []
+  buf.push(item)
 
-    let item = this._buffer.shift()
-    --len
-
-    assert(item != undefined)
-    assert(item.type == TYPE_VALUE || item.type == TYPE_ERROR)
-
-    if (item.type == TYPE_VALUE) {
-      this._value = item.value
-    }
-
-    return item
+  if (prevState == STATE_NORMAL) {
+    // notify all waiters for the opportunity to publish
+    chan._triggerWaiters(true)
+    chan._needsDrain && chan._emitDrain() // TODO: probably not needed here
   }
 
-  _triggerWaiters() {
-    return undefined
+  return needsCancelFn ? () => { item.fnVal = item.fnErr = undefined } : nop
+}
+
+function _takeFromWaitingPublisher() {
+  assert(chan._state == STATE_NORMAL || chan._state == STATE_CLOSING)
+
+  let len = chan._buffer.length
+  if (len == 0) {
+    chan._state = STATE_WAITING_FOR_PUBLISHER
+    return FAILED
   }
 
-  _emitDrain() {
-    return undefined
+  let item = chan._buffer.shift()
+  --len
+
+  assert(item != undefined)
+  assert(item.type == TYPE_VALUE || item.type == TYPE_ERROR)
+
+  if (item.type == TYPE_VALUE) {
+    chan._value = item.value
   }
+
+  return item
+}
+
+function _triggerWaiters() {
+  return undefined
+}
+
+function _emitDrain() {
+  return undefined
 }
 
 function assert() {

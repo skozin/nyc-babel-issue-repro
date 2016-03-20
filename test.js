@@ -1,5 +1,5 @@
 import test from 'ava'
-import {Chan} from '.'
+import {chan} from '.'
 import {STATE_NORMAL, STATE_WAITING_FOR_PUBLISHER, STATE_CLOSING, STATE_CLOSED} from '.'
 import {TYPE_VALUE, TYPE_ERROR} from '.'
 
@@ -11,23 +11,22 @@ const TEST_BUFFER = [
 ]
 
 test('this provides complete coverage', t => {
-  let ch = new Chan()
-  takeItAll(ch)
+  takeItAll(chan)
 
-  ch._state = STATE_NORMAL
-  ch._buffer = []
-  takeItAll(ch)
+  chan._state = STATE_NORMAL
+  chan._buffer = []
+  takeItAll(chan)
 
-  ch._state = STATE_NORMAL
-  ch._buffer = TEST_BUFFER.slice()
-  takeItAll(ch)
+  chan._state = STATE_NORMAL
+  chan._buffer = TEST_BUFFER.slice()
+  takeItAll(chan)
   
   t.pass()
 })
 
-function takeItAll(ch) {
+function takeItAll(chan) {
   for (let i = 0; i < 8; ++i) {
-    ch.take(0 != (i & 0b100), 0 != (i & 0b010), 0 != (i & 0b001))
+    chan.take(0 != (i & 0b100), 0 != (i & 0b010), 0 != (i & 0b001))
   }
 }
 
