@@ -9,10 +9,11 @@ export const TYPE_ERROR = 1
 export const CLOSED = {}
 export const FAILED = {}
 
-export let chan = {
-  _state: STATE_WAITING_FOR_PUBLISHER,
-  _buffer: [],
-  take, _take, _takeFromWaitingPublisher, _triggerWaiters, _emitDrain
+export let chan = { construct, take, _take, _takeFromWaitingPublisher, _triggerWaiters, _emitDrain }
+
+function construct() {
+  chan._state = STATE_WAITING_FOR_PUBLISHER
+  chan._buffer = []
 }
 
 function take(passResolve, passReject, needsCancelFn) {

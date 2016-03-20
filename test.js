@@ -11,6 +11,7 @@ const TEST_BUFFER = [
 ]
 
 test('this provides complete coverage', t => {
+  chan.construct()
   takeItAll(chan)
 
   chan._state = STATE_NORMAL
