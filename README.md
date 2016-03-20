@@ -29,4 +29,4 @@ branches and functions look incorrect, much less than expected.
 [AVA]: https://github.com/sindresorhus/ava
 [cochan]: https://github.com/skozin/cochan
 [Babel]: http://babeljs.io
-[gh-pages]: http://skozin.github.io/nyc-babel-issue-repro/index.js.html
+[gh-pages]: http://skozin.github.io/nyc-babel-issue-repro/nyc-babel-issue-repro/index.html
