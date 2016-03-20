@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">86.67% </span>
+        <span class="strong">87.72% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>52/60</span>
+        <span class='fraction'>50/57</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75% </span>
+        <span class="strong">73.68% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>33/44</span>
+        <span class='fraction'>28/38</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">66.67% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>4/6</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">88.14% </span>
+        <span class="strong">89.29% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>52/59</span>
+        <span class='fraction'>50/56</span>
       </div>
     </div>
   </div>
@@ -149,16 +149,7 @@
 104
 105
 106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+107</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
@@ -174,14 +165,6 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,8 +196,7 @@
 <span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-yes">8×</span>
-<span class="cline-any cline-yes">5×</span>
-<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -258,11 +240,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">9×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -289,14 +271,6 @@ export class Chan {
   constructor() {
     this._state = STATE_WAITING_FOR_PUBLISHER
     this._buffer = []
-  }
-&nbsp;
-  get _needsDrain() {
-    return Math.random() &gt; 0.5
-  }
-&nbsp;
-  get _bufferSize() {
-    return Math.floor(10 * Math.random())
   }
 &nbsp;
   take(passResolve, passReject, needsCancelFn) {
@@ -327,9 +301,8 @@ export class Chan {
         let fn = i</span>tem.type == TYPE_VALUE ? <span class="branch-0 cbranch-no" title="branch not covered" >fnVal : fnErr
         item.fnVal &amp;&amp; item.fnVal()
         fn &amp;&amp; fn(item.value)
-        if (this._state != STATE_CLOSED &amp;&amp; this._buffer.length &lt; this._bufferSize) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (this._state != STATE_CLOSED) {
           this._triggerWaiters(true)
-          t</span>his._needsDrain &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >this._emitDrain()
         }
         return nop
       }
@@ -344,7 +317,7 @@ export class Chan {
     if (prevState == STATE_NORMAL) {
       // notify all waiters for the opportunity to publish
       this._triggerWaiters(true)
-      t</span>his._needsDrain &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >this._emitDrain() // TODO: probably not needed here
+      this._emitDrain()
     }
  
     return needsCancelFn ? <span class="fstat-no" title="function not covered" >() =&gt; {</span></span> <span class="cstat-no" title="statement not covered" >item.fnVal = item.fnErr = undefined } : nop
@@ -377,7 +350,7 @@ export class Chan {
   }
 &nbsp;
   _emitDrain() {
-<span class="cstat-no" title="statement not covered" >    return undefined</span>
+    return undefined
   }
 }
 &nbsp;
@@ -394,7 +367,7 @@ function assert() {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Mar 20 2016 21:24:45 GMT+0300 (MSK)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Mar 20 2016 22:30:57 GMT+0300 (MSK)
 </div>
 </div>
 <script src="../prettify.js"></script>

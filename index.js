@@ -16,14 +16,6 @@ export class Chan {
     this._buffer = []
   }
 
-  get _needsDrain() {
-    return Math.random() > 0.5
-  }
-
-  get _bufferSize() {
-    return Math.floor(10 * Math.random())
-  }
-
   take(passResolve, passReject, needsCancelFn) {
     return new Promise(resolve => {
       this._take(
@@ -52,9 +44,8 @@ export class Chan {
         let fn = item.type == TYPE_VALUE ? fnVal : fnErr
         item.fnVal && item.fnVal()
         fn && fn(item.value)
-        if (this._state != STATE_CLOSED && this._buffer.length < this._bufferSize) {
+        if (this._state != STATE_CLOSED) {
           this._triggerWaiters(true)
-          this._needsDrain && this._emitDrain()
         }
         return nop
       }
@@ -69,7 +60,7 @@ export class Chan {
     if (prevState == STATE_NORMAL) {
       // notify all waiters for the opportunity to publish
       this._triggerWaiters(true)
-      this._needsDrain && this._emitDrain() // TODO: probably not needed here
+      this._emitDrain()
     }
  
     return needsCancelFn ? () => { item.fnVal = item.fnErr = undefined } : nop
