@@ -19,8 +19,12 @@ export class Chan {
   take(passResolve, passReject, needsCancelFn) {
     return new Promise(resolve => {
       this._take(
-        passResolve ? resolve : undefined,
-        passReject ? resolve : undefined,
+        passResolve
+          ? resolve
+          : undefined,
+        passReject
+          ? resolve
+          : undefined,
         needsCancelFn)
     })
   }
@@ -41,7 +45,9 @@ export class Chan {
         }
       } else {
         assert(item.type == TYPE_VALUE || item.type == TYPE_ERROR)
-        let fn = item.type == TYPE_VALUE ? fnVal : fnErr
+        let fn = item.type == TYPE_VALUE
+          ? fnVal
+          : fnErr
         item.fnVal && item.fnVal()
         fn && fn(item.value)
         if (this._state != STATE_CLOSED) {
@@ -63,7 +69,9 @@ export class Chan {
       this._emitDrain()
     }
  
-    return needsCancelFn ? () => { item.fnVal = item.fnErr = undefined } : nop
+    return needsCancelFn
+      ? () => item.fnVal = item.fnErr = undefined
+      : nop
   }
 
   _takeFromWaitingPublisher() {
