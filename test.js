@@ -1,5 +1,5 @@
 import test from 'ava'
-import {Chan} from '.'
+import {chan} from '.'
 import {STATE_NORMAL, STATE_WAITING_FOR_PUBLISHER, STATE_CLOSING, STATE_CLOSED} from '.'
 import {TYPE_VALUE, TYPE_ERROR} from '.'
 
@@ -11,7 +11,7 @@ const TEST_BUFFER = [
 ]
 
 test('this provides complete coverage', t => {
-  let ch = new Chan()
+  let ch = chan; ch.construct()
   takeItAll(ch)
 
   ch._state = STATE_NORMAL

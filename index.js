@@ -9,12 +9,12 @@ export const TYPE_ERROR = 1
 export const CLOSED = {}
 export const FAILED = {}
 
-export class Chan {
+export let chan = {
 
-  constructor() {
+  construct() {
     this._state = STATE_WAITING_FOR_PUBLISHER
     this._buffer = []
-  }
+  },
 
   take(passResolve, passReject, needsCancelFn) {
     return new Promise(resolve => {
@@ -27,7 +27,7 @@ export class Chan {
           : undefined,
         needsCancelFn)
     })
-  }
+  },
 
   _take(fnVal, fnErr, needsCancelFn) {
     if (this._state == STATE_CLOSED) {
@@ -72,7 +72,7 @@ export class Chan {
     return needsCancelFn
       ? () => item.fnVal = item.fnErr = undefined
       : nop
-  }
+  },
 
   _takeFromWaitingPublisher() {
     assert(this._state == STATE_NORMAL || this._state == STATE_CLOSING)
@@ -94,11 +94,11 @@ export class Chan {
     }
 
     return item
-  }
+  },
 
   _triggerWaiters() {
     return undefined
-  }
+  },
 
   _emitDrain() {
     return undefined
